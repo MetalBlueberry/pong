@@ -1,6 +1,8 @@
 package pong
 
 import (
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -50,4 +52,32 @@ func (b *Ball) ReflectY() {
 	vx, vy := b.Speed.Apply(0, 0)
 	b.Speed.Reset()
 	b.Speed.Translate(vx, -vy)
+}
+
+func (b *Ball) ReflectUpWithAngle(angle float64) {
+	vx, vy := b.Speed.Apply(0, 0)
+	b.Speed.Reset()
+	b.Speed.Translate(math.Sqrt(vx*vx+vy*vy), 0)
+	// b.Speed.Translate(0, -4)
+	b.Speed.Rotate(-angle)
+}
+
+func (b *Ball) SpeedUp(multiplier float64) {
+	b.Speed.Scale(multiplier, multiplier)
+}
+
+type Direction int
+
+const (
+	None Direction = iota
+	Up
+	Down
+)
+
+func (b *Ball) Direction() Direction {
+	_, vy := b.Speed.Apply(0, 0)
+	if vy > 0 {
+		return Down
+	}
+	return Up
 }
